@@ -6,6 +6,7 @@ Find the contiguous subarray within an array of integers that has the largest su
 """
 
 # ** Add your code here **
+import heapq
 
 
 def get_subarray_sum(nums):
@@ -99,13 +100,13 @@ flat_list = flatten_list(nested_list)
 print(flat_list)
 
 
-import heapq
-
 class PriorityQueue:
     def __init__(self):
         self.queue = []
+
     def push(self, item, priority):
         heapq.heappush(self.queue, (priority, item))
+
     def pop(self):
         return heapq.heappop(self.queue)[1]
 
@@ -124,6 +125,7 @@ print(task)
 
 task = priority_queue.pop()  # task2
 (print(task))
+
 
 def longest_increasing_subsequence(nums):
     if not nums:
