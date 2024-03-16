@@ -50,7 +50,7 @@ jobs:
           poetry install
         # Run the tests. I'm using pytest and the file is in the tests directory.
       - name: Run tests
-        run: pytest */tests/test*
+        run: poetry run pytest */tests/test*
         working-directory: microservices
 
   # deploy:
