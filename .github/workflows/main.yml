@@ -41,10 +41,13 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
-      - name: Install pytest
+      - name: Install poetry
         run: |
           python -m pip install --upgrade pip
-          pip install pytest
+          pip install poetry
+      - name: Install dependencies
+        run: |
+          poetry install
         # Run the tests. I'm using pytest and the file is in the tests directory.
       - name: Run tests
         run: pytest */tests/test*
