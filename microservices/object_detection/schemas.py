@@ -7,6 +7,7 @@ class BoxBase(BaseModel):
     w: int
     h: int
     confidence: float
+    label: str
 
 
 class BoxCreate(BoxBase):

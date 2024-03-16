@@ -22,6 +22,7 @@ class Box(Base):
     w = Column(Integer)
     h = Column(Integer)
     confidence = Column(Float)
+    label = Column(String)
     owner_id = Column(Integer, ForeignKey("images.id"))
 
     owner = relationship("Image", back_populates="boxes")
