@@ -58,6 +58,11 @@ jobs:
           DATABASE_TEST_PORT: ${{ secrets.DATABASE_TEST_PORT }}
           DATABASE_TEST_NAME: ${{ secrets.DATABASE_TEST_NAME }}
           DATABASE_TEST_PASS: ${{ secrets.DATABASE_TEST_PASS }}
+          DATABASE_HOST: ${{ secrets.DATABASE_TEST_HOST }}
+          DATABASE_USER: ${{ secrets.DATABASE_TEST_USER }}
+          DATABASE_PORT: ${{ secrets.DATABASE_TEST_PORT }}
+          DATABASE_NAME: ${{ secrets.DATABASE_TEST_NAME }}
+          DATABASE_PASS: ${{ secrets.DATABASE_TEST_PASS }}
 
   # deploy:
   #   needs: pre-commit
