@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from microservices.object_detection.app import app, get_db
 from microservices.object_detection.config import global_config
 
-print(global_config.get_sync_database_url_test())
+
 engine = create_engine(global_config.get_sync_database_url_test())
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
