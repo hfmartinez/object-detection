@@ -1,0 +1,74 @@
+version: "3.1"
+
+services:
+  # apigateway:
+  #   container_name: apigateway-app
+  #   hostname: pavo-labs-apigateway
+  #   image: hfmartinez/pavo-labs-apigateway
+  #   build:
+  #     context: ./
+  #     dockerfile: ./apigateway/Dockerfile
+  #   ports:
+  #     - "127.0.0.1:4800:4800"
+  object-detection:
+    container_name: object-detection-app
+    hostname: object-detection-service
+    image: hfmartinez/object-detection:object-detection
+    build:
+      context: ./microservices/object-detection
+      dockerfile: ./Dockerfile
+    command: bash -c "alembic upgrade head && uvicorn app:app --port=6000 --host=0.0.0.0"
+    ports:
+      - "6000:6000"
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - ./microservices/object-detection/.env
+    # networks:
+    #   vpcbr:
+    #     ipv4_address: 10.5.0.10
+  # reports:
+  #   container_name: reports-app
+  #   hostname: pavo-labs-reports
+  #   image: hfmartinez/pavo-labs-reports
+  #   build:
+  #     context: ./
+  #     dockerfile: ./reports/Dockerfile
+  #   ports:
+  #     - "127.0.0.1:4500:4500"
+  db:
+    image: postgres:14.0
+    restart: always
+    hostname: object-detection-db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: admin
+      POSTGRES_DB: object-detection
+    ports:
+      - 5432:5432
+    # networks:
+    #   vpcbr:
+    #     ipv4_address: 10.5.0.5
+
+  # adminer:
+  #   image: adminer
+  #   restart: always
+  #   ports:
+  #     - 8080:8080
+  #   networks:
+  #     vpcbr:
+  #       ipv4_address: 10.5.0.6
+
+networks:
+  vpcbr:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
+          gateway: 10.5.0.1
