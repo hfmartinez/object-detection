@@ -49,6 +49,13 @@ jobs:
         run: |
           poetry install
         # Run the tests. I'm using pytest and the file is in the tests directory.
+      - name: Create .env arquive
+        run: |
+          echo "DATABASE_TEST_HOST=${{ secrets.DATABASE_TEST_HOST }}" >> ./.env
+          echo "DATABASE_TEST_PORT=${{ secrets.DATABASE_TEST_PORT }}" >> ./.env
+          echo "DATABASE_TEST_USER=${{ secrets.DATABASE_TEST_USER }}" >> ./.env
+          echo "DATABASE_TEST_NAME=${{ secrets.DATABASE_TEST_NAME }}" >> ./.env
+          echo "DATABASE_TEST_PASS=${{ secrets.DATABASE_TEST_PASS }}" >> ./.env
       - name: Run tests
         run: poetry run pytest */tests/test*
         working-directory: microservices
