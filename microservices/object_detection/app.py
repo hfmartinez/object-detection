@@ -1,14 +1,24 @@
-import crud
-import models
-import schemas
-from database import SessionLocal, engine
-from object_detection import ObjectDetection
+from microservices.object_detection import crud, models, schemas
+from microservices.object_detection.database import SessionLocal, engine
+from microservices.object_detection.object_detection import ObjectDetection
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+origins = [
+    "*",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def get_db():

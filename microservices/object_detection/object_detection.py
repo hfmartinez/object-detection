@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import urllib
 import base64
-from schemas import BoxCreate
+from microservices.object_detection.schemas import BoxCreate
 
 
 class ObjectDetection:

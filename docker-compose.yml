@@ -13,9 +13,9 @@ services:
   object-detection:
     container_name: object-detection-app
     hostname: object-detection-service
-    image: hfmartinez/object-detection:object-detection
+    image: hfmartinez/object_detection:object-detection
     build:
-      context: ./microservices/object-detection
+      context: ./microservices/object_detection
       dockerfile: ./Dockerfile
     command: bash -c "alembic upgrade head && uvicorn app:app --port=6000 --host=0.0.0.0"
     ports:
@@ -24,7 +24,7 @@ services:
       db:
         condition: service_healthy
     env_file:
-      - ./microservices/object-detection/.env
+      - ./microservices/object_detection/.env
     # networks:
     #   vpcbr:
     #     ipv4_address: 10.5.0.10
@@ -52,6 +52,14 @@ services:
       POSTGRES_DB: object-detection
     ports:
       - 5432:5432
+  db-test:
+    image: postgres:14.0
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: admin
+      POSTGRES_DB: object-detection-test
+    ports:
+      - 5500:5432
     # networks:
     #   vpcbr:
     #     ipv4_address: 10.5.0.5

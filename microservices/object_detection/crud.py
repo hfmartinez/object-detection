@@ -1,5 +1,4 @@
-import models
-import schemas
+from microservices.object_detection import models, schemas
 from sqlalchemy.orm import Session
 
 
