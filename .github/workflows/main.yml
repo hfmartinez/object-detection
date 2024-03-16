@@ -56,6 +56,7 @@ jobs:
           echo "DATABASE_TEST_USER=${{ secrets.DATABASE_TEST_USER }}" >> ./.env
           echo "DATABASE_TEST_NAME=${{ secrets.DATABASE_TEST_NAME }}" >> ./.env
           echo "DATABASE_TEST_PASS=${{ secrets.DATABASE_TEST_PASS }}" >> ./.env
+        working-directory: microservices/object-detection
       - name: Run tests
         run: poetry run pytest */tests/test*
         working-directory: microservices
