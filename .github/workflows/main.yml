@@ -52,7 +52,7 @@ jobs:
         uses: er5bus/alembic-python-action@v1
         with:
           command: "upgrade head"
-        working-directory: ./
+          working-directory: ./
       - name: Run tests
         run: poetry run pytest microservices/*/tests/test*
         env:
