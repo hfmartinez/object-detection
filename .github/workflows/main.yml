@@ -53,7 +53,6 @@ jobs:
         uses: er5bus/alembic-python-action@v1
         with:
           command: "upgrade head"
-          working-directory: microservices/object_detection
       - name: Run tests
         run: poetry run pytest microservices/*/tests/test*
         env:
