@@ -36,3 +36,7 @@ class Image(ImageCreate):
 
     class Config:
         from_attributes = True
+
+
+class NewImage(Image):
+    new_image_base_64: str

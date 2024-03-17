@@ -105,3 +105,14 @@ def read_items(skip: int = 0, limit: int = 100):
     if response.status_code == 200:
         return response.json()
     return HTTPException(status_code=404, detail="Error reading boxes")
+
+
+@app.get("/api/v1/boxes/{image_id}", response_model=schemas.NewImage, tags=["Reports"])
+def read_boxes(image_id: int, label: str = None, confidence: float = 0.5):
+    response = requests.get(
+        f"http://{urls.get('REPORTS_URL')}:7000/api/v1/boxes/{image_id}",
+        params={"label": label, "confidence": confidence},
+    )
+    if response.status_code == 200:
+        return response.json()
+    return HTTPException(status_code=404, detail="Error reading boxes")

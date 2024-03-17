@@ -15,6 +15,9 @@ services:
       - "127.0.0.1:8000:4500"
     env_file:
       - ./microservices/api_gateway/.env.dev
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
       vpcbr:
         ipv4_address: 10.5.0.10
@@ -28,8 +31,6 @@ services:
       context: ./microservices/object_detection
       dockerfile: ./Dockerfile
     command: bash -c "uvicorn microservices.object_detection.app:app --port=6000 --host=0.0.0.0"
-    # ports:
-    #   - "127.0.0.1:8000:6000"
     depends_on:
       db:
         condition: service_healthy
@@ -38,15 +39,24 @@ services:
     networks:
       vpcbr:
         ipv4_address: 10.5.0.11
-  # reports:
-  #   container_name: reports-app
-  #   hostname: pavo-labs-reports
-  #   image: hfmartinez/pavo-labs-reports
-  #   build:
-  #     context: ./
-  #     dockerfile: ./reports/Dockerfile
-  #   ports:
-  #     - "127.0.0.1:4500:4500"
+  reports:
+    container_name: reports_api
+    hostname: reports-service
+    profiles: [dev]
+    restart: always
+    image: hfmartinez/object_detection:reports
+    build:
+      context: ./microservices/reports
+      dockerfile: ./Dockerfile
+    command: bash -c "uvicorn microservices.reports.app:app --port=7000 --host=0.0.0.0"
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - ./microservices/reports/.env.dev
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.12
   db:
     image: postgres:14.0
     restart: always

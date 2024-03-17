@@ -8,6 +8,7 @@ class Config:
     def __init__(self):
         self.urls = {
             "OBJECT_DETECTION_URL": os.getenv("OBJECT_DETECTION_URL"),
+            "REPORTS_URL": os.getenv("REPORTS_URL"),
         }
 
     def get_urls(self):
