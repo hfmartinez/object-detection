@@ -7,10 +7,13 @@ from microservices.object_detection.schemas import BoxCreate
 
 class ObjectDetection:
     def __init__(self):
-        self.MODEL = cv2.dnn.readNet("models/yolov3.weights", "models/yolov3.cfg")
+        self.MODEL = cv2.dnn.readNet(
+            "microservices/object_detection/models/yolov3.weights",
+            "microservices/object_detection/models/yolov3.cfg",
+        )
 
         self.CLASSES = []
-        with open("models/coco.names", "r") as f:
+        with open("microservices/object_detection/models/coco.names", "r") as f:
             self.CLASSES = [line.strip() for line in f.readlines()]
 
         self.OUTPUT_LAYERS = [

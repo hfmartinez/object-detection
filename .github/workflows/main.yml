@@ -49,9 +49,12 @@ jobs:
         run: |
           poetry install
         # Run the tests. I'm using pytest and the file is in the tests directory.
+      - name: DB Migration
+        run: |
+          alembic upgrade head
+        working-directory: microservices/object_detection
       - name: Run tests
-        run: poetry run pytest */tests/test*
-        working-directory: microservices
+        run: poetry run pytest microservices/*/tests/test*
         env:
           DATABASE_TEST_HOST: ${{ secrets.DATABASE_TEST_HOST }}
           DATABASE_TEST_USER: ${{ secrets.DATABASE_TEST_USER }}
