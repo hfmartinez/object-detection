@@ -13,7 +13,7 @@ config = context.config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-config.set_main_option("sqlalchemy.url", global_config.get_sync_database_url_test())
+config.set_main_option("sqlalchemy.url", global_config.get_sync_database_url())
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
