@@ -1,33 +1,43 @@
 version: "3.1"
 
 services:
-  # apigateway:
-  #   container_name: apigateway-app
-  #   hostname: pavo-labs-apigateway
-  #   image: hfmartinez/pavo-labs-apigateway
-  #   build:
-  #     context: ./
-  #     dockerfile: ./apigateway/Dockerfile
-  #   ports:
-  #     - "127.0.0.1:4800:4800"
+  apigateway:
+    container_name: apigateway_api
+    hostname: api_gateway-service
+    profiles: [dev]
+    restart: always
+    image: hfmartinez/object_detection:api_gateway
+    build:
+      context: ./microservices/api_gateway
+      dockerfile: ./Dockerfile
+    command: bash -c "uvicorn microservices.api_gateway.app:app --port=4500 --host=0.0.0.0"
+    ports:
+      - "127.0.0.1:8000:4500"
+    env_file:
+      - ./microservices/api_gateway/.env.dev
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.10
   object-detection:
-    container_name: object-detection-app
+    container_name: object_detection_api
     hostname: object-detection-service
+    profiles: [dev]
+    restart: always
     image: hfmartinez/object_detection:object-detection
     build:
       context: ./microservices/object_detection
       dockerfile: ./Dockerfile
     command: bash -c "uvicorn microservices.object_detection.app:app --port=6000 --host=0.0.0.0"
-    ports:
-      - "127.0.0.1:8000:6000"
+    # ports:
+    #   - "127.0.0.1:8000:6000"
     depends_on:
       db:
         condition: service_healthy
     env_file:
       - ./microservices/object_detection/.env.dev
-    # networks:
-    #   vpcbr:
-    #     ipv4_address: 10.5.0.10
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.11
   # reports:
   #   container_name: reports-app
   #   hostname: pavo-labs-reports
@@ -40,7 +50,8 @@ services:
   db:
     image: postgres:14.0
     restart: always
-    hostname: object-detection-db
+    hostname: object_detection_db
+    profiles: [dev]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 10s
@@ -50,35 +61,29 @@ services:
       POSTGRES_PASSWORD: admin
       POSTGRES_USER: admin
       POSTGRES_DB: object-detection
-    ports:
-      - 5432:5432
+    # ports:
+    #   - 5432:5432
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.5
 
   db-test:
     image: postgres:14.0
+    profiles: [test]
     environment:
       POSTGRES_PASSWORD: admin
       POSTGRES_USER: admin
       POSTGRES_DB: object-detection-test
-    ports:
-      - 5500:5432
-    # networks:
-    #   vpcbr:
-    #     ipv4_address: 10.5.0.5
-
-    # networks:
-    #   vpcbr:
-    #     ipv4_address: 10.5.0.6
+    # ports:
+    #   - 5500:5432
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.6
 
 volumes:
   postgres-data:
-
-  # adminer:
-  #   image: adminer
-  #   restart: always
-  #   ports:
-  #     - 8080:8080
 networks:
   vpcbr:
     driver: bridge
