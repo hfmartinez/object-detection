@@ -45,14 +45,14 @@ function App() {
     setActivateFilters(false);
     setLoader(true);
     try {
-      var response = await axios.post("http://localhost:8000/api/v1/images/", {
+      var response = await axios.post("http://10.5.0.10:8000/api/v1/images/", {
         image_base_64: base64Data,
       });
 
       if (response.status === 200) {
         setImgId(response.data.id);
         response = await axios.get(
-          `http://localhost:8000/api/v1/boxes/${response.data.id}`,
+          `http://10.5.0.10:8000/api/v1/boxes/${response.data.id}`,
           {
             params: {
               label: labelSearch,
@@ -74,7 +74,7 @@ function App() {
     setLoader(true);
     setFoundMsg("");
     axios
-      .get(`http://localhost:8000/api/v1/boxes/${imgId}`, {
+      .get(`http://10.5.0.10:8000/api/v1/boxes/${imgId}`, {
         params: {
           label: labelSearch.value,
           confidence: confidence,
@@ -96,7 +96,7 @@ function App() {
   };
   useEffect(() => {
     async function fetchData() {
-      var response = await axios.get("http://localhost:8000/api/v1/classes/");
+      var response = await axios.get("http://10.5.0.10:8000/api/v1/classes/");
       if (response.status === 200) {
         setLabels(
           response.data.map((x) => {
