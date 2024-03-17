@@ -51,7 +51,7 @@ def test_create_image():
                 "confidence": 0.88,
                 "label": "car",
                 "id": 1,
-                "owner_id": 2,
+                "owner_id": 1,
             }
         ],
     }
