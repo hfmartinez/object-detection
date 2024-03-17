@@ -1,4 +1,4 @@
-from microservices.reports import models, schemas
+from microservices.reports import models
 from sqlalchemy.orm import Session
 
 
