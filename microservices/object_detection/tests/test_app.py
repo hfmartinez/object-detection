@@ -55,3 +55,18 @@ def test_create_image():
             }
         ],
     }
+
+
+def test_read_images():
+    response = client.get("api/v1/images/")
+    assert response.status_code == 200
+
+
+def test_read_image():
+    response = client.get("api/v1/images/1")
+    assert response.status_code == 200
+
+
+def test_read_items():
+    response = client.get("api/v1/boxes/")
+    assert response.status_code == 200
