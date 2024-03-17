@@ -19,6 +19,7 @@ class DrawBoxes:
                 (box.x, box.y),
                 (box.x + box.w, box.y + box.h),
                 color=self.COLORS[self.CLASSES.index(box.label)],
+                thickness=2,
             )
             cv2.putText(
                 img,

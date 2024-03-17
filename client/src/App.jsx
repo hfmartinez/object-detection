@@ -62,7 +62,6 @@ function App() {
     }
   };
   const onClickFilter = () => {
-    console.log(labelSearch);
     axios
       .get(`http://localhost:8000/api/v1/boxes/${imgId}`, {
         params: {
