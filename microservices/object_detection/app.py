@@ -35,6 +35,12 @@ def read_root():
     return {"Service": "Object-detection"}
 
 
+@app.get("/api/v1/classes/", response_model=list[str], tags=["Images"])
+def get_classes():
+    obj_detection_model = ObjectDetection()
+    return obj_detection_model.CLASSES
+
+
 @app.post("/api/v1/images/", response_model=schemas.Image, tags=["Images"])
 def create_image(image: schemas.ImageCreate, db: Session = Depends(get_db)):
     db_img = crud.get_img_by_64(db, image_base_64=image.image_base_64)

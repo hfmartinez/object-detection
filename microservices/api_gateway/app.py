@@ -24,6 +24,16 @@ def read_root():
     return {"Service": "Api-Gateway"}
 
 
+@app.get("/api/v1/classes/", response_model=list[str], tags=["Images"])
+def get_classes():
+    response = requests.get(
+        f"http://{urls.get('OBJECT_DETECTION_URL')}:6000/api/v1/classes/"
+    )
+    if response.status_code == 404:
+        raise HTTPException(status_code=404, detail="Error reading images")
+    return response.json()
+
+
 @app.post(
     "/api/v1/images/", response_model=schemas.Image, tags=["Object Detection Service"]
 )
