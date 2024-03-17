@@ -6,6 +6,9 @@ from sqlalchemy import pool
 from alembic import context
 from microservices.object_detection.config import global_config
 import microservices.object_detection.models as models
+import sys
+
+sys.path = ["", ".."] + sys.path[1:]
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
