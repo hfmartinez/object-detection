@@ -8,7 +8,7 @@ RUN poetry config virtualenvs.create false
 RUN poetry install 
 
 # Copy Application
-COPY . /app
+COPY . /app/microservices/object_detection
 
 # Run Application
 EXPOSE 6000

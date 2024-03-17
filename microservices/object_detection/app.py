@@ -4,13 +4,14 @@ from microservices.object_detection.object_detection import ObjectDetection
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
+import sys
+
+sys.path = ["", ".."] + sys.path[1:]
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-origins = [
-    "*",
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,

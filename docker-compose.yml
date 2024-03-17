@@ -17,14 +17,14 @@ services:
     build:
       context: ./microservices/object_detection
       dockerfile: ./Dockerfile
-    command: bash -c "alembic upgrade head && uvicorn app:app --port=6000 --host=0.0.0.0"
+    command: bash -c "uvicorn microservices.object_detection.app:app --port=6000 --host=0.0.0.0"
     ports:
-      - "6000:6000"
+      - "127.0.0.1:8000:6000"
     depends_on:
       db:
         condition: service_healthy
     env_file:
-      - ./microservices/object_detection/.env
+      - ./microservices/object_detection/.env.dev
     # networks:
     #   vpcbr:
     #     ipv4_address: 10.5.0.10
@@ -52,6 +52,9 @@ services:
       POSTGRES_DB: object-detection
     ports:
       - 5432:5432
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+
   db-test:
     image: postgres:14.0
     environment:
@@ -64,15 +67,18 @@ services:
     #   vpcbr:
     #     ipv4_address: 10.5.0.5
 
+    # networks:
+    #   vpcbr:
+    #     ipv4_address: 10.5.0.6
+
+volumes:
+  postgres-data:
+
   # adminer:
   #   image: adminer
   #   restart: always
   #   ports:
   #     - 8080:8080
-  #   networks:
-  #     vpcbr:
-  #       ipv4_address: 10.5.0.6
-
 networks:
   vpcbr:
     driver: bridge
