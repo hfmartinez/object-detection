@@ -48,11 +48,11 @@ jobs:
       - name: Install dependencies
         run: |
           poetry install
-        # Run the tests. I'm using pytest and the file is in the tests directory.
       - name: DB migration
         uses: er5bus/alembic-python-action@v1
         with:
           command: "upgrade head"
+        working-directory: ./
       - name: Run tests
         run: poetry run pytest microservices/*/tests/test*
         env:
