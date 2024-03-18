@@ -4,7 +4,7 @@ services:
   apigateway:
     container_name: apigateway_api
     hostname: api_gateway-service
-    profiles: [dev]
+    profiles: [dev, backend]
     restart: always
     image: hfmartinez/object_detection:api_gateway
     build:
@@ -24,7 +24,7 @@ services:
   object-detection:
     container_name: object_detection_api
     hostname: object-detection-service
-    profiles: [dev]
+    profiles: [dev, backend]
     restart: always
     image: hfmartinez/object_detection:object-detection
     build:
@@ -42,7 +42,7 @@ services:
   reports:
     container_name: reports_api
     hostname: reports-service
-    profiles: [dev]
+    profiles: [dev, backend]
     restart: always
     image: hfmartinez/object_detection:reports
     build:
@@ -61,6 +61,7 @@ services:
     container_name: object-detection-client
     hostname: object-detection-client
     image: hfmartinez/object_detection:client
+    profiles: [dev, frontend]
     build:
       context: ./client/
     ports:
@@ -72,7 +73,7 @@ services:
     image: postgres:14.0
     restart: always
     hostname: object_detection_db
-    profiles: [dev]
+    profiles: [dev, db]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 10s
@@ -98,8 +99,22 @@ services:
     networks:
       vpcbr:
         ipv4_address: 10.5.0.6
+  redis-cache:
+    image: redis:alpine
+    profiles: [dev, db]
+    hostname: redis-cache
+    container_name: redis-cache
+    restart: on-failure
+    command: redis-server
+    volumes:
+      - cache:/data
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.7
 
 volumes:
+  cache:
+    driver: local
   postgres-data:
 networks:
   vpcbr:
