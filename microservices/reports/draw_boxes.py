@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import base64
+from microservices.reports.schemas import Box
 
 
 class DrawBoxes:
@@ -11,9 +12,23 @@ class DrawBoxes:
         self.COLORS = np.random.uniform(0, 255, size=(len(self.CLASSES), 3))
         self.COLORS /= (np.sum(self.COLORS**2, axis=1) ** 0.5 / 255)[np.newaxis].T
 
-    def draw_objects(self, img_64, boxes):
+    def draw_objects(self, img_64, boxes, confidence=None):
         img = self.load_img_base_64(img_64)
         for box in boxes:
+            if isinstance(box, dict):
+                box = Box(
+                    x=box["x"],
+                    y=box["y"],
+                    w=box["w"],
+                    h=box["h"],
+                    label=box["label"],
+                    confidence=box["confidence"],
+                    id=box["id"],
+                    owner_id=box["owner_id"],
+                )
+            if confidence:
+                if box.confidence < confidence:
+                    continue
             img = cv2.rectangle(
                 img,
                 (box.x, box.y),

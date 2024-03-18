@@ -21,6 +21,10 @@ class Config:
             "PORT": os.getenv("DATABASE_TEST_PORT"),
         }
         self.api_key = os.getenv("API_KEY")
+        self.redis_config = {
+            "REDIS_HOSTNAME": os.environ.get("REDIS_HOSTNAME"),
+            "REDIS_PORT": os.environ.get("REDIS_PORT"),
+        }
 
     def get_sync_database_url(self):
         return f"postgresql://{self.database_settings.get('USER')}:{self.database_settings.get('PASSWORD')}@{self.database_settings.get('HOST')}:{self.database_settings.get('PORT')}/{self.database_settings.get('NAME')}"
@@ -30,6 +34,9 @@ class Config:
 
     def get_settings(self):
         return self.database_settings
+
+    def get_redis_config(self):
+        return self.redis_config
 
     def get_api_key(self):
         return self.api_key
