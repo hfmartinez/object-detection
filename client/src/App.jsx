@@ -22,6 +22,7 @@ function App() {
   const [labelSearch, setLabelSearch] = useState("");
   const [labels, setLabels] = useState([]);
   const [foundMsg, setFoundMsg] = useState("");
+  const [token, setToken] = useState("");
 
   const onImageChange = (event) => {
     if (event.target.files && event.target.files[0]) {
@@ -44,20 +45,28 @@ function App() {
     let base64Data = img64.replace(regex, "");
     setActivateFilters(false);
     setLoader(true);
+    setFoundMsg("");
+    setLabelSearch({ value: "", label: "" });
+    setConfidence(0.5);
     try {
-      var response = await axios.post("http://10.5.0.10:8000/api/v1/images/", {
-        image_base_64: base64Data,
-      });
+      var response = await axios.post(
+        "http://localhost:8000/api/v1/images/",
+        {
+          image_base_64: base64Data,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
       if (response.status === 200) {
         setImgId(response.data.id);
         response = await axios.get(
-          `http://10.5.0.10:8000/api/v1/boxes/${response.data.id}`,
+          `http://localhost:8000/api/v1/boxes/${response.data.id}`,
           {
             params: {
-              label: labelSearch,
-              confidence: confidence,
+              label: "",
+              confidence: 0.5,
             },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
         if (response.status === 200) {
@@ -74,11 +83,12 @@ function App() {
     setLoader(true);
     setFoundMsg("");
     axios
-      .get(`http://10.5.0.10:8000/api/v1/boxes/${imgId}`, {
+      .get(`http://localhost:8000/api/v1/boxes/${imgId}`, {
         params: {
           label: labelSearch.value,
           confidence: confidence,
         },
+        headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {
         if (response.status === 200) {
@@ -95,17 +105,29 @@ function App() {
       });
   };
   useEffect(() => {
-    async function fetchData() {
-      var response = await axios.get("http://10.5.0.10:8000/api/v1/classes/");
+    async function fetchCredentials() {
+      var response = await axios.post("http://localhost:8000/login", {
+        username: "test",
+        password: "test",
+      });
       if (response.status === 200) {
-        setLabels(
-          response.data.map((x) => {
-            return { value: x, label: x };
-          })
+        setToken(response.data.access_token);
+        var responseData = await axios.get(
+          "http://localhost:8000/api/v1/classes/",
+          {
+            headers: { Authorization: `Bearer ${response.data.access_token}` },
+          }
         );
+        if (responseData.status === 200) {
+          setLabels(
+            responseData.data.map((x) => {
+              return { value: x, label: x };
+            })
+          );
+        }
       }
     }
-    fetchData();
+    fetchCredentials();
   }, []);
   return (
     <div className="wrapper font-vietnam flex flex-col ">

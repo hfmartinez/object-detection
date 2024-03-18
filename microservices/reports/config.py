@@ -20,6 +20,7 @@ class Config:
             "HOST": os.getenv("DATABASE_TEST_HOST"),
             "PORT": os.getenv("DATABASE_TEST_PORT"),
         }
+        self.api_key = os.getenv("API_KEY")
 
     def get_sync_database_url(self):
         return f"postgresql://{self.database_settings.get('USER')}:{self.database_settings.get('PASSWORD')}@{self.database_settings.get('HOST')}:{self.database_settings.get('PORT')}/{self.database_settings.get('NAME')}"
@@ -29,6 +30,9 @@ class Config:
 
     def get_settings(self):
         return self.database_settings
+
+    def get_api_key(self):
+        return self.api_key
 
 
 global_config = Config()

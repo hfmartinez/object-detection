@@ -1,15 +1,17 @@
 from microservices.reports import crud, models, schemas
 from microservices.reports.database import SessionLocal, engine
 from microservices.reports.draw_boxes import DrawBoxes
+from microservices.reports.config import global_config
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Security
+from fastapi.security import APIKeyHeader
 from sqlalchemy.orm import Session
 import sys
 
 sys.path = ["", ".."] + sys.path[1:]
 
 models.Base.metadata.create_all(bind=engine)
-
+api_key_header = APIKeyHeader(name="x-api-key")
 app = FastAPI()
 origins = ["*"]
 
@@ -20,6 +22,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+def validate_api_key(api_key: str):
+    if api_key != global_config.get_api_key():
+        raise HTTPException(401, "Invalid credentials")
+    return True
 
 
 def get_db():
@@ -40,8 +48,10 @@ def read_boxes(
     image_id: int,
     label: str = None,
     confidence: float = 0.5,
+    api_key: str = Security(api_key_header),
     db: Session = Depends(get_db),
 ):
+    validate_api_key(api_key)
     db_boxes = crud.get_boxes(db, image_id=image_id, label=label, confidence=confidence)
     if not db_boxes:
         raise HTTPException(status_code=404, detail="Data not found")
