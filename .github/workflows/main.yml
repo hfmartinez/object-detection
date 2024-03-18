@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - main
-      - develop
   pull_request:
     branches:
       - main
-      - develop
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
@@ -67,22 +65,48 @@ jobs:
   #         DATABASE_NAME: ${{ secrets.DATABASE_TEST_NAME }}
   #         DATABASE_PASS: ${{ secrets.DATABASE_TEST_PASS }}
 
-  # deploy:
-  #   needs: pre-commit
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: Set up Python
-  #       uses: actions/setup-python@v4
-  #       with:
-  #         python-version: "3.11"
-  #     - name: Install dependencies
-  #       run: |
-  #         python -m pip install --upgrade pip
-  #         pip install build
-  #     - name: Build package
-  #       run: python -m build
-  #     - name: Publish package
-  #       uses: pypa/gh-action-pypi-publish@release/v1
-  #       with:
-  #         password: ${{ secrets.PYPI_API_TOKEN }}
+  build:
+    runs-on: ubuntu-latest
+    needs: pre-commit
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to Docker Hub
+        run: echo ${{ secrets.DOCKERHUB_ACCESS_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+      - name: Build apigateway and push Docker image
+        run: |
+          docker buildx create --use
+          docker buildx build \
+            --file ./microservices/api_gateway/Dockerfile \
+            --tag ${{ secrets.DOCKERHUB_ORG }}/object_detection:api_gateway \
+            --push ./microservices/api_gateway/
+      - name: Build Object Detection and push Docker image
+        run: |
+          docker buildx create --use
+          docker buildx build \
+            --file ./microservices/object_detection/Dockerfile \
+            --tag ${{ secrets.DOCKERHUB_ORG }}/object_detection:object-detection \
+            --push ./microservices/object_detection/
+      - name: Build Reports and push Docker image
+        run: |
+          docker buildx create --use
+          docker buildx build \
+            --file ./microservices/reports/Dockerfile \
+            --tag ${{ secrets.DOCKERHUB_ORG }}/object_detection:reports \
+            --push ./microservices/reports/
+      - name: Build Client and push Docker image
+        run: |
+          docker buildx create --use
+          docker buildx build \
+            --file ./client/Dockerfile \
+            --tag ${{ secrets.DOCKERHUB_ORG }}/object_detection:client \
+            --push ./client/
+
+    env:
+      DOCKER_CLI_EXPERIMENTAL: enabled
+      DOCKER_BUILDKIT: 1
