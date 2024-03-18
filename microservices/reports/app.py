@@ -65,7 +65,7 @@ def read_boxes(
         if not db_image:
             raise HTTPException(status_code=404, detail="Image not found")
         draw_obj = DrawBoxes()
-        new_img_64 = draw_obj.draw_objects(
+        new_img_64, _ = draw_obj.draw_objects(
             img_64=db_image.image_base_64, boxes=db_boxes
         )
         new_img = schemas.NewImage(
@@ -76,9 +76,14 @@ def read_boxes(
         )
         return new_img
     draw_obj = DrawBoxes()
-    new_img_64 = draw_obj.draw_objects(
-        img_64=response["image_base_64"], boxes=response_boxes, confidence=confidence
+    new_img_64, num_box = draw_obj.draw_objects(
+        img_64=response["image_base_64"],
+        boxes=response_boxes,
+        confidence=confidence,
+        label=label,
     )
+    if num_box == 0:
+        raise HTTPException(status_code=404, detail="Image not found")
     new_img = schemas.NewImage(
         image_base_64=response["image_base_64"],
         id=response["id"],
