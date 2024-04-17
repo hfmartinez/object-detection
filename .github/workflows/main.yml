@@ -107,6 +107,14 @@ jobs:
             --tag ${{ secrets.DOCKERHUB_ORG }}/object_detection:client \
             --push ./client/
 
+      - name: Build Migration and push Docker image
+        run: |
+          docker buildx create --use
+          docker buildx build \
+            --file ./alembic/Dockerfile \
+            --tag ${{ secrets.DOCKERHUB_ORG }}/object_detection:migration \
+            --push ./alembic/
+
     env:
       DOCKER_CLI_EXPERIMENTAL: enabled
       DOCKER_BUILDKIT: 1
