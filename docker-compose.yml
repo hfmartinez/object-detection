@@ -5,8 +5,10 @@ services:
     container_name: apigateway_api
     hostname: api_gateway-service
     profiles: [dev, backend]
+    pull_policy: always
     restart: always
     image: hfmartinez/object_detection:api_gateway
+    platform: linux/amd64
     build:
       context: ./microservices/api_gateway
       dockerfile: ./Dockerfile
@@ -25,8 +27,10 @@ services:
     container_name: object_detection_api
     hostname: object-detection-service
     profiles: [dev, backend]
+    pull_policy: always
     restart: always
-    image: hfmartinez/object_detection:object-detection
+    image: hfmartinez/object_detection:object-detection 
+    platform: linux/amd64
     build:
       context: ./microservices/object_detection
       dockerfile: ./Dockerfile
@@ -43,8 +47,10 @@ services:
     container_name: reports_api
     hostname: reports-service
     profiles: [dev, backend]
+    pull_policy: always
     restart: always
     image: hfmartinez/object_detection:reports
+    platform: linux/amd64
     build:
       context: ./microservices/reports
       dockerfile: ./Dockerfile
@@ -61,7 +67,9 @@ services:
     container_name: object-detection-client
     hostname: object-detection-client
     image: hfmartinez/object_detection:client
+    platform: linux/amd64
     profiles: [dev, frontend]
+    pull_policy: always
     build:
       context: ./client/
     ports:
@@ -69,11 +77,31 @@ services:
     networks:
       vpcbr:
         ipv4_address: 10.5.0.13
+  db-migration:
+    container_name: db_migration
+    hostname: db-migration
+    profiles: [migration]
+    pull_policy: always
+    restart: no
+    image: hfmartinez/object_detection:migration
+    platform: linux/amd64
+    build:
+      context: ./alembic
+      dockerfile: ./Dockerfile
+    command: bash -c "alembic upgrade head"
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - ./alembic/.env.dev
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.14
   db:
     image: postgres:14.0
     restart: always
     hostname: object_detection_db
-    profiles: [dev, db]
+    profiles: [dev, db, migration]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 10s

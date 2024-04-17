@@ -12,8 +12,9 @@ class DrawBoxes:
         self.COLORS = np.random.uniform(0, 255, size=(len(self.CLASSES), 3))
         self.COLORS /= (np.sum(self.COLORS**2, axis=1) ** 0.5 / 255)[np.newaxis].T
 
-    def draw_objects(self, img_64, boxes, confidence=None):
+    def draw_objects(self, img_64, boxes, confidence=None, label=""):
         img = self.load_img_base_64(img_64)
+        num_box = 0
         for box in boxes:
             if isinstance(box, dict):
                 box = Box(
@@ -28,6 +29,9 @@ class DrawBoxes:
                 )
             if confidence:
                 if box.confidence < confidence:
+                    continue
+            if label:
+                if label != box.label:
                     continue
             img = cv2.rectangle(
                 img,
@@ -45,8 +49,9 @@ class DrawBoxes:
                 self.COLORS[self.CLASSES.index(box.label)],
                 2,
             )
+            num_box = +1
         base_64_img = self.create_img_base_64(img)
-        return base_64_img
+        return base_64_img, num_box
 
     def create_img_base_64(self, img):
         _, buffer = cv2.imencode(".jpg", img)

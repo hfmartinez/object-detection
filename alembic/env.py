@@ -4,8 +4,8 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
-from microservices.object_detection.config import global_config
-import microservices.object_detection.models as models
+from config import global_config
+import models
 import sys
 
 sys.path = ["", ".."] + sys.path[1:]
