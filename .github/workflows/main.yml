@@ -75,6 +75,14 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
+      - name: Checkout github repo (+ download lfs dependencies)
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          
+      - name: Checkout LFS objects
+        run: git lfs checkout
+
       - name: Login to Docker Hub
         run: echo ${{ secrets.DOCKERHUB_ACCESS_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
