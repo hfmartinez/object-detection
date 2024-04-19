@@ -187,7 +187,7 @@ services:
       discovery.seed_hosts: logstash
       LS_JAVA_OPTS: "-Xms512m -Xmx512m"
     volumes:
-      - ./logstash/pipeline/kafka-elastic-pipeline.config:/usr/share/logstash/pipeline/kafka-elastic-pipeline.config
+      - ./logstash/pipeline/:/usr/share/logstash/pipeline/
       - ./logstash/object-detection.log:/home/object-detection.log
     # ports:
     #   - "5000:5000/tcp"
@@ -199,7 +199,7 @@ services:
     networks:
       vpcbr:
         ipv4_address: 10.5.0.2
-    command: logstash -f /usr/share/logstash/pipeline/kafka-elastic-pipeline.config
+    command: logstash -f /usr/share/logstash/pipeline/
 
   zookeeper:
     image: zookeeper
