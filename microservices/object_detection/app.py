@@ -6,8 +6,10 @@ from microservices.object_detection.utils import redis_manager
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Depends, FastAPI, HTTPException, Security
 from fastapi.security import APIKeyHeader
+from kafka import KafkaProducer
 from sqlalchemy.orm import Session
 import sys
+import json
 
 sys.path = ["", ".."] + sys.path[1:]
 
@@ -15,6 +17,11 @@ models.Base.metadata.create_all(bind=engine)
 api_key_header = APIKeyHeader(name="x-api-key")
 app = FastAPI()
 origins = ["*"]
+topic = "logs"
+producer = KafkaProducer(
+    bootstrap_servers="10.5.0.3:9092",
+    value_serializer=lambda v: json.dumps(v).encode("utf-8"),
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -48,6 +55,12 @@ def read_root():
 def get_classes(api_key: str = Security(api_key_header)):
     validate_api_key(api_key)
     response = redis_manager(key="classes", operation="read")
+    message = {
+        "endpoint": "/api/v1/classes/",
+        "microservice": "object detection",
+        "msg": "processed data",
+    }
+    producer.send(topic, value=message)
     if not response:
         obj_detection_model = ObjectDetection()
         redis_manager(
@@ -64,6 +77,12 @@ def create_image(
     db: Session = Depends(get_db),
 ):
     validate_api_key(api_key)
+    message = {
+        "endpoint": "/api/v1/images/",
+        "microservice": "object detection",
+        "msg": "processed data",
+    }
+    producer.send(topic, value=message)
     response = redis_manager(key=f"{image.image_base_64}", operation="read")
     response_boxes = redis_manager(key=f"{image.image_base_64}_boxes", operation="read")
     if not response or not response_boxes:
